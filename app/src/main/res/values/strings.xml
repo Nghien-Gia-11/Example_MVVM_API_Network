@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">Example_MVVM_API_NetWork</string>
+    <string name="pokedex">Pokedex</string>
 </resources>
