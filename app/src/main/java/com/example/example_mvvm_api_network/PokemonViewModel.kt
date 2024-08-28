@@ -1,18 +1,23 @@
 package com.example.example_mvvm_api_network
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.example.example_mvvm_api_network.instance_retorfit.RetrofitInstance
-import com.example.example_mvvm_api_network.model.Pokemon
+import com.example.example_mvvm_api_network.data.model.Pokemon
+import com.example.example_mvvm_api_network.data.repository.PokemonRepositoryImpl
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.inject.Inject
 
-class PokemonViewModel : ViewModel() {
+@HiltViewModel
+class PokemonViewModel @Inject constructor(
+    private val pokemonRepositoryImpl: PokemonRepositoryImpl
+) : ViewModel() {
 
-    private var _pokemon = MutableLiveData<Pokemon>()
-    val pokemon : LiveData<Pokemon> get() = _pokemon
+    private var _pokemon = MutableStateFlow(Pokemon())
+    val pokemon: StateFlow<Pokemon> get() = _pokemon
 
     private var pages = 0
 
@@ -22,28 +27,31 @@ class PokemonViewModel : ViewModel() {
 
     private fun fetchPokemon(){
         viewModelScope.launch {
-            try {
-                val response = RetrofitInstance.api.getPokemon(0)
-                _pokemon.postValue(response)
-            } catch (e : Exception){
-                e.printStackTrace()
-                Log.e("Exception", e.toString())
-            }
+            val result = pokemonRepositoryImpl.getPokemonWithRetrofit(0)
+            result.fold(
+                onSuccess = {
+                    _pokemon.update { it }
+                },
+                onFailure = {
+
+                }
+            )
         }
     }
+
 
     fun loadMore(){
         viewModelScope.launch {
             pages ++
-            try {
-                val response = RetrofitInstance.api.getPokemon(20 * pages)
-                val current = _pokemon.value ?: Pokemon()
-                current.results.addAll(response.results)
-                _pokemon.postValue(current)
-            } catch (e : Exception){
-                e.printStackTrace()
-                Log.e("Exception", e.toString())
-            }
+            val result = pokemonRepositoryImpl.getPokemonWithRetrofit(20 * pages)
+            result.fold(
+                onSuccess = {
+                    _pokemon.update { it }
+                },
+                onFailure = {
+
+                }
+            )
         }
     }
 }

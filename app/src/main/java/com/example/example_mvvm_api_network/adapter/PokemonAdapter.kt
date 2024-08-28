@@ -1,4 +1,4 @@
-package com.example.example_mvvm_api_network
+package com.example.example_mvvm_api_network.adapter
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -8,8 +8,9 @@ import android.view.ViewGroup
 import androidx.core.content.ContextCompat
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
+import com.example.example_mvvm_api_network.R
 import com.example.example_mvvm_api_network.databinding.LayoutItemPokemonBinding
-import com.example.example_mvvm_api_network.model.Pokemon
+import com.example.example_mvvm_api_network.data.model.Pokemon
 import java.lang.ref.WeakReference
 
 class PokemonAdapter(private val context: Context, private var pokemon: Pokemon) :

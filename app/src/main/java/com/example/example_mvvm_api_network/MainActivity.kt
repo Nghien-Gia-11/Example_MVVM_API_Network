@@ -3,11 +3,16 @@ package com.example.example_mvvm_api_network
 import android.os.Bundle
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.StaggeredGridLayoutManager
+import com.example.example_mvvm_api_network.adapter.PokemonAdapter
 import com.example.example_mvvm_api_network.databinding.ActivityMainBinding
-import com.example.example_mvvm_api_network.model.Pokemon
+import com.example.example_mvvm_api_network.data.model.Pokemon
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityMainBinding
@@ -22,9 +27,11 @@ class MainActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         setPokemonAdapter()
-        viewModel.pokemon.observe(this) {
-            pokemonAdapter.setPokemon(it)
-            isLoading = false
+        lifecycleScope.launch {
+            viewModel.pokemon.collect {
+                pokemonAdapter.setPokemon(it)
+                isLoading = false
+            }
         }
         loadMore()
     }

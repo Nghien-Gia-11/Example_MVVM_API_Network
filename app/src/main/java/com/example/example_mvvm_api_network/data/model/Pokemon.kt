@@ -1,4 +1,4 @@
-package com.example.example_mvvm_api_network.model
+package com.example.example_mvvm_api_network.data.model
 
 data class Pokemon(
     val count : Int = 0,
